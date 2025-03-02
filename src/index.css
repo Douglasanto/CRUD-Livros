@@ -1,0 +1,406 @@
+/* Estilos para Author.tsx */
+.authors-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.authors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px auto;
+}
+
+.author-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.author-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.author-card h3 {
+  margin: 0 0 10px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.author-card p {
+  margin: 0;
+  font-size: 1rem;
+  color: #666;
+}
+
+.no-authors {
+  font-size: 1.2rem;
+  color: #666;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Estilos para Books.tsx */
+.books-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px auto;
+}
+
+.book-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.book-card h3 {
+  margin: 0 0 10px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.book-card p {
+  margin: 0;
+  font-size: 1rem;
+  color: #666;
+}
+
+.no-books {
+  font-size: 1.2rem;
+  color: #666;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Estilos para o container do formulário */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+form input,
+form select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+form input:focus,
+form select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+}
+
+form button {
+  padding: 10px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+form button:hover {
+  background-color: #2563eb;
+}
+
+/* Estilos do botão */
+.back-link {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #3b82f6;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.back-link:hover {
+  background-color: #2563eb;
+}
+
+/* Estilos para o formulário de livros */
+.book-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.info-message {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-section h3 {
+  margin: 0 0 10px;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.form-divider {
+  border: 0;
+  height: 1px;
+  background-color: #ddd;
+  margin: 20px 0;
+}
+
+/* Estilos para o modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 90%;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.modal p {
+  margin: 10px 0;
+  font-size: 1rem;
+  color: #666;
+}
+
+.modal h3 {
+  margin: 20px 0 10px;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.modal ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.modal ul li {
+  margin: 5px 0;
+  font-size: 1rem;
+  color: #666;
+}
+
+.modal button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal button:hover {
+  background-color: #2563eb;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .authors-grid,
+  .books-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .author-card,
+  .book-card {
+    padding: 15px;
+  }
+
+  .author-card h3,
+  .book-card h3 {
+    font-size: 1.25rem;
+  }
+
+  .author-card p,
+  .book-card p {
+    font-size: 0.875rem;
+  }
+
+  .form-container,
+  .book-form {
+    padding: 15px;
+  }
+
+  form input,
+  form select,
+  form button {
+    font-size: 0.875rem;
+  }
+
+  .modal {
+    padding: 15px;
+  }
+
+  .modal h2 {
+    font-size: 1.25rem;
+  }
+
+  .modal p,
+  .modal ul li {
+    font-size: 0.875rem;
+  }
+
+  .modal h3 {
+    font-size: 1rem;
+  }
+
+  .modal button {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .authors-grid,
+  .books-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+  }
+
+  .author-card,
+  .book-card {
+    padding: 10px;
+  }
+
+  .author-card h3,
+  .book-card h3 {
+    font-size: 1rem;
+  }
+
+  .author-card p,
+  .book-card p {
+    font-size: 0.75rem;
+  }
+
+  .form-container,
+  .book-form {
+    padding: 10px;
+  }
+
+  form input,
+  form select,
+  form button {
+    font-size: 0.75rem;
+  }
+
+  .modal {
+    padding: 10px;
+  }
+
+  .modal h2 {
+    font-size: 1rem;
+  }
+
+  .modal p,
+  .modal ul li {
+    font-size: 0.75rem;
+  }
+
+  .modal h3 {
+    font-size: 0.875rem;
+  }
+
+  .modal button {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+}
