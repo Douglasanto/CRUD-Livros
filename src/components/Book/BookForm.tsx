@@ -1,21 +1,24 @@
-import React, { useContext, useState } from "react";
-import { useForm } from "react-hook-form";
-import { AppContext } from "../../context/AppContext";
+import { useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import styled from "styled-components";
-import { Modal } from "../Modal"; // Importe o Modal que criamos
+import { useContext } from "react";
+import { AppContext } from "../../context/AppContext";
 
 interface BookFormData {
   name: string;
-  author_id: string;
+  author_id?: string;
   pages?: number;
 }
 
-// Estilos com styled-components
+interface BookFormProps {
+  onSubmit: (data: BookFormData) => void;
+  authors: { id: string; name: string; books: { name: string }[] }[];
+}
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 1rem;
 `;
 
 const Input = styled.input`
@@ -42,6 +45,11 @@ const Select = styled.select`
   }
 `;
 
+const ErrorMessage = styled.span`
+  color: #ef4444;
+  font-size: 0.875rem;
+`;
+
 const Button = styled.button`
   padding: 0.5rem 1rem;
   background-color: #3b82f6;
@@ -52,15 +60,6 @@ const Button = styled.button`
   &:hover {
     background-color: #2563eb;
   }
-  &:disabled {
-    background-color: #9ca3af;
-    cursor: not-allowed;
-  }
-`;
-
-const InfoMessage = styled.p`
-  font-size: 0.875rem;
-  color: #6b7280;
 `;
 
 const FormSection = styled.div`
@@ -75,111 +74,158 @@ const FormDivider = styled.hr`
   margin: 1rem 0;
 `;
 
-const BookForm: React.FC = () => {
-  const { authors, addBook, addAuthor } = useContext(AppContext)!;
-  const { register, handleSubmit, reset, watch } = useForm<BookFormData>();
+const InfoMessage = styled.p`
+  font-size: 0.875rem;
+  color: #6b7280;
+`;
+
+export function BookForm({ onSubmit, authors }: BookFormProps) {
+  const { addAuthor } = useContext(AppContext)!;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    control,
+    setError,
+    setValue,
+  } = useForm<BookFormData>();
+
   const [newAuthorName, setNewAuthorName] = useState("");
   const [newAuthorEmail, setNewAuthorEmail] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const bookName = watch("name");
-  const selectedAuthorId = watch("author_id");
+  const bookName = useWatch({ control, name: "name" });
+  const selectedAuthorId = useWatch({ control, name: "author_id" });
 
-  const onSubmit = (data: BookFormData) => {
-    let authorId = data.author_id;
+  const handleFormSubmit = (data: BookFormData) => {
+    const selectedAuthor = authors.find(
+      (author) => author.id === selectedAuthorId
+    );
 
-    if (!data.author_id && newAuthorName) {
+    if (selectedAuthor) {
+      const isBookDuplicate = selectedAuthor.books.some(
+        (book) => book.name.toLowerCase() === data.name.toLowerCase()
+      );
+
+      if (isBookDuplicate) {
+        setError("name", {
+          type: "manual",
+          message: "Um livro com o mesmo nome já existe para este autor.",
+        });
+        return;
+      }
+    }
+
+    if (!selectedAuthorId && !newAuthorName) {
+      setError("author_id", {
+        type: "manual",
+        message: "Selecione um autor ou crie um novo.",
+      });
+      return;
+    }
+
+    let authorId = selectedAuthorId;
+    if (!selectedAuthorId && newAuthorName) {
+      const isAuthorDuplicate = authors.some(
+        (author) => author.name.toLowerCase() === newAuthorName.toLowerCase()
+      );
+
+      if (isAuthorDuplicate) {
+        setError("author_id", {
+          type: "manual",
+          message: "Um autor com o mesmo nome já existe.",
+        });
+        return;
+      }
+
+      if (
+        newAuthorEmail &&
+        !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(newAuthorEmail)
+      ) {
+        setError("author_id", {
+          type: "manual",
+          message: "Por favor, insira um email válido.",
+        });
+        return;
+      }
+
       const newAuthor = {
         id: String(Date.now()),
         name: newAuthorName,
         email: newAuthorEmail || undefined,
+        books: [],
       };
       addAuthor(newAuthor);
       authorId = newAuthor.id;
     }
 
-    const newBook = {
-      id: String(Date.now()),
-      name: data.name,
-      author_id: authorId,
-      pages: data.pages || undefined,
-    };
-    addBook(newBook);
-    reset();
-    setNewAuthorName("");
-    setNewAuthorEmail("");
-    setIsModalOpen(false);
+    onSubmit({ ...data, author_id: authorId });
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setValue("author_id", e.target.value);
+    if (e.target.value) {
+      setNewAuthorName("");
+      setNewAuthorEmail("");
+    }
   };
 
   return (
-    <>
-      <Button onClick={() => setIsModalOpen(true)}>Adicionar Livro</Button>
+    <Form onSubmit={handleSubmit(handleFormSubmit)}>
+      <FormSection>
+        <h3>Adicionar Livro</h3>
+        <Input
+          {...register("name", { required: "O nome do livro é obrigatório." })}
+          placeholder="Nome do livro"
+        />
+        {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Adicionar Livro"
-      >
-        <Form onSubmit={handleSubmit(onSubmit)}>
-          <FormSection>
-            <h3>Adicionar Livro</h3>
-            <Input
-              type="text"
-              placeholder="Nome do livro"
-              {...register("name", { required: true })}
-            />
-            <Select {...register("author_id")}>
-              <option value="">Selecione um autor</option>
-              {authors.map((author) => (
-                <option key={author.id} value={author.id}>
-                  {author.name}
-                </option>
-              ))}
-            </Select>
-            <Input
-              type="number"
-              placeholder="Número de páginas (opcional)"
-              {...register("pages")}
-            />
-          </FormSection>
+        <Select {...register("author_id")} onChange={handleSelectChange}>
+          <option value="">Selecione um autor</option>
+          {authors.map((author) => (
+            <option key={author.id} value={author.id}>
+              {author.name}
+            </option>
+          ))}
+        </Select>
+        {errors.author_id && (
+          <ErrorMessage>{errors.author_id.message}</ErrorMessage>
+        )}
 
-          <FormDivider />
+        <Input
+          type="number"
+          {...register("pages")}
+          placeholder="Número de páginas (opcional)"
+        />
+      </FormSection>
 
-          <FormSection>
-            <h3>Novo Autor</h3>
-            {(!bookName || selectedAuthorId) && (
-              <InfoMessage>
-                {!bookName
-                  ? "Adicione o nome do livro para habilitar a criação de um novo autor."
-                  : "Selecione 'Selecione um autor' para habilitar a criação de um novo autor."}
-              </InfoMessage>
-            )}
-            <Input
-              type="text"
-              placeholder="Nome do novo autor"
-              value={newAuthorName}
-              onChange={(e) => setNewAuthorName(e.target.value)}
-              disabled={!bookName || !!selectedAuthorId}
-            />
-            <Input
-              type="email"
-              placeholder="Email do novo autor (opcional)"
-              value={newAuthorEmail}
-              onChange={(e) => setNewAuthorEmail(e.target.value)}
-              disabled={!bookName || !!selectedAuthorId}
-            />
-          </FormSection>
+      <FormDivider />
 
-          <Button
-            type="submit"
-            disabled={!bookName || !(selectedAuthorId || newAuthorName)}
-          >
-            Adicionar Livro
-          </Button>
-        </Form>
-      </Modal>
-    </>
+      <FormSection>
+        <h3>Novo Autor</h3>
+        {(!bookName || selectedAuthorId) && (
+          <InfoMessage>
+            {!bookName
+              ? "Adicione o nome do livro para habilitar a criação de um novo autor."
+              : "Selecione 'Selecione um autor' para habilitar a criação de um novo autor."}
+          </InfoMessage>
+        )}
+        <Input
+          type="text"
+          placeholder="Nome do novo autor"
+          value={newAuthorName}
+          onChange={(e) => setNewAuthorName(e.target.value)}
+          disabled={!bookName || !!selectedAuthorId}
+        />
+        <Input
+          type="email"
+          placeholder="Email do novo autor (opcional)"
+          value={newAuthorEmail}
+          onChange={(e) => setNewAuthorEmail(e.target.value)}
+          disabled={!bookName || !!selectedAuthorId}
+        />
+      </FormSection>
+
+      <Button type="submit">Adicionar Livro</Button>
+    </Form>
   );
-};
-
-export default BookForm;
+}

@@ -25,12 +25,30 @@ const Content = styled(Dialog.Content)`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 90%;
   max-width: 450px;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    max-width: 90%;
+  }
+
+  @media (max-width: 480px) {
+    width: 95%; 
+    padding: 0.75rem;
+  }
 `;
 
 const Title = styled(Dialog.Title)`
   font-size: 1.25rem;
   font-weight: bold;
   margin-bottom: 1rem;
+
+  @media (max-width: 768px) {
+    font-size: 1.1rem; 
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 const CloseButton = styled.button`
@@ -44,6 +62,10 @@ const CloseButton = styled.button`
   &:hover {
     background-color: #4b5563;
   }
+
+  @media (max-width: 768px) {
+    width: 100%; 
+  }
 `;
 
 export function Modal({ isOpen, onClose, title, children }: ModalProps) {
@@ -52,7 +74,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
       <Dialog.Portal>
         <Overlay />
         <Content>
-          <Title>{title}</Title>
+          <Title>Nome: {title}</Title>
           {children}
           <Dialog.Close asChild>
             <CloseButton>Fechar</CloseButton>

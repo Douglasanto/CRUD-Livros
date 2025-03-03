@@ -1,20 +1,34 @@
-import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
-import { AppContext } from "../../context/AppContext";
 import styled from "styled-components";
-import { Modal } from "../Modal";
+import { useContext } from "react";
+import { AppContext } from "../../context/AppContext";
 
 interface AuthorFormData {
   name: string;
   email?: string;
 }
 
-// Estilos com styled-components
+interface AuthorFormProps {
+  onSubmit: (data: AuthorFormData) => void;
+}
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    padding: 15px;
+    gap: 0.75rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px;
+    gap: 0.5rem;
+  }
 `;
 
 const Input = styled.input`
@@ -22,10 +36,34 @@ const Input = styled.input`
   border: 1px solid #d1d5db;
   border-radius: 4px;
   font-size: 1rem;
+
   &:focus {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+    padding: 0.4rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+    padding: 0.3rem;
+  }
+`;
+
+const ErrorMessage = styled.span`
+  color: #ef4444;
+  font-size: 0.875rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
   }
 `;
 
@@ -36,33 +74,32 @@ const Button = styled.button`
   border: none;
   border-radius: 4px;
   cursor: pointer;
+
   &:hover {
     background-color: #2563eb;
   }
-  &:disabled {
-    background-color: #9ca3af;
-    cursor: not-allowed;
+
+  @media (max-width: 768px) {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
   }
 `;
 
-const ErrorMessage = styled.p`
-  color: #ef4444;
-  font-size: 0.875rem;
-  margin-top: -0.5rem;
-`;
-
-const AuthorForm: React.FC = () => {
-  const { authors, addAuthor } = useContext(AppContext)!;
+export function AuthorForm({ onSubmit }: AuthorFormProps) {
+  const { authors } = useContext(AppContext)!;
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
+    setError,
   } = useForm<AuthorFormData>();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const onSubmit = (data: AuthorFormData) => {
+  const handleFormSubmit = (data: AuthorFormData) => {
     const isDuplicate = authors.some(
       (author) =>
         author.name.toLowerCase() === data.name.toLowerCase() ||
@@ -70,55 +107,36 @@ const AuthorForm: React.FC = () => {
     );
 
     if (isDuplicate) {
-      setError("Um autor com o mesmo nome ou email já existe.");
-      return; 
+      setError("name", {
+        type: "manual",
+        message: "Um autor com o mesmo nome ou email já existe.",
+      });
+      return;
     }
 
-    const newAuthor = {
-      id: String(Date.now()),
-      ...data,
-    };
-    addAuthor(newAuthor);
-    reset();
-    setError(null); 
-    setIsModalOpen(false); 
+    onSubmit(data);
   };
 
   return (
-    <>
-      <Button onClick={() => setIsModalOpen(true)}>Adicionar Autor</Button>
+    <Form onSubmit={handleSubmit(handleFormSubmit)}>
+      <Input
+        {...register("name", { required: "O nome do autor é obrigatório." })}
+        placeholder="Nome do autor"
+      />
+      {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setError(null); 
-        }}
-        title="Adicionar Autor"
-      >
-        <Form onSubmit={handleSubmit(onSubmit)}>
-          <Input
-            type="text"
-            placeholder="Nome do autor"
-            {...register("name", {
-              required: "O nome do autor é obrigatório.",
-            })}
-          />
-          {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
+      <Input
+        {...register("email", {
+          pattern: {
+            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+            message: "Por favor, insira um email válido.",
+          },
+        })}
+        placeholder="Email do autor (opcional)"
+      />
+      {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
 
-          <Input
-            type="email"
-            placeholder="Email do autor (opcional)"
-            {...register("email")}
-          />
-
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-
-          <Button type="submit">Adicionar Autor</Button>
-        </Form>
-      </Modal>
-    </>
+      <Button type="submit">Adicionar Autor</Button>
+    </Form>
   );
-};
-
-export default AuthorForm;
+}
